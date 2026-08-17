@@ -142,13 +142,37 @@ const TEAM_VALUE_SCHEMA = {
   },
 } as const
 
-/** Render one board summary line. */
+/** Render the full board with ids so the model can read exact ids before mutating. */
 function renderBoard(_args: unknown, value: TeamToolValue): Array<{ type: 'text'; text: string }> {
-  const { counts } = value
-  return [{
-    type: 'text',
-    text: `Team: ${counts.teammates} teammates, ${counts.tasks} tasks (${counts.todo} todo, ${counts.in_progress} in progress, ${counts.blocked} blocked, ${counts.done} done), ${counts.skills} skills.`,
-  }]
+  const { counts, teammates, tasks, skills } = value
+  const lines: string[] = [
+    `Team: ${counts.teammates} teammates, ${counts.tasks} tasks (${counts.todo} todo, ${counts.in_progress} in progress, ${counts.blocked} blocked, ${counts.done} done), ${counts.skills} skills.`,
+  ]
+  if (teammates.length > 0) {
+    lines.push('', 'Teammates:')
+    for (const teammate of teammates) {
+      const skillList = teammate.skills.length > 0 ? teammate.skills.join(', ') : '(none)'
+      lines.push(`  [${teammate.id}] ${teammate.name}`)
+      lines.push(`    persona: ${teammate.persona}`)
+      lines.push(`    skills: ${skillList}`)
+    }
+  }
+  if (tasks.length > 0) {
+    lines.push('', 'Tasks:')
+    for (const task of tasks) {
+      const assignee = task.assignee_id ?? 'unassigned'
+      lines.push(`  [${task.id}] ${task.title} (${task.status})`)
+      lines.push(`    assignee: ${assignee}`)
+      if (task.result) lines.push(`    result: ${task.result}`)
+    }
+  }
+  if (skills.length > 0) {
+    lines.push('', 'Skills:')
+    for (const skill of skills) {
+      lines.push(`  [${skill.id}] ${skill.name}`)
+    }
+  }
+  return [{ type: 'text', text: lines.join('\n') }]
 }
 
 /** Shared output declaration for all four team tools. */
