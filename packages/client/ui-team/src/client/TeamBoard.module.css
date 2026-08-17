@@ -1,0 +1,261 @@
+/* TeamBoard: a read-only three-panel board (teammates, task columns, skills)
+   rendered inside the conversation view body. Semantic tokens only. */
+
+.board {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 20px 24px 40px;
+  color: var(--dsw-alias-label-primary);
+}
+
+.state {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 100%;
+  padding: 40px 24px;
+  color: var(--dsw-alias-label-caption);
+  text-align: center;
+}
+
+.stateTitle {
+  font-size: 15px;
+  line-height: 24px;
+  font-weight: 600;
+  color: var(--dsw-alias-label-primary);
+}
+
+.stateHint {
+  max-width: 420px;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--dsw-alias-label-secondary);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--dsw-alias-label-secondary);
+}
+
+.sectionEmpty {
+  padding: 12px 0;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--dsw-alias-label-caption);
+}
+
+/* ---- Teammates ---- */
+
+.teammates {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.teammate {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid var(--dsw-alias-border-l1);
+  border-radius: 10px;
+  background: var(--dsw-alias-bg-layer-1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.teammateName {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+}
+
+.teammatePersona {
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--dsw-alias-label-secondary);
+  overflow-wrap: anywhere;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  box-sizing: border-box;
+  padding: 1px 8px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--dsw-alias-label-secondary);
+}
+
+/* ---- Task columns ---- */
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.column {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 120px;
+  padding: 10px;
+  border: 1px solid var(--dsw-alias-border-l1);
+  border-top-width: 3px;
+  border-radius: 10px;
+  background: var(--dsw-alias-bg-layer-1);
+}
+
+/* Per-column top border color accents. */
+.column[data-team-column="todo"] {
+  border-top-color: var(--dsw-alias-label-caption);
+}
+
+.column[data-team-column="in_progress"] {
+  border-top-color: var(--dsw-alias-brand-primary);
+}
+
+.column[data-team-column="blocked"] {
+  border-top-color: var(--dsw-alias-state-error-primary);
+}
+
+.column[data-team-column="done"] {
+  border-top-color: var(--dsw-alias-state-success-primary);
+}
+
+.columnHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.columnTitle {
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--dsw-alias-label-secondary);
+}
+
+.columnCount {
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--dsw-alias-bg-layer-3);
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.taskList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.task {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  border: 1px solid var(--dsw-alias-border-l1);
+  border-left: 3px solid transparent;
+  border-radius: 8px;
+  background: var(--dsw-alias-bg-base);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* Task left border accents match column color. */
+.column[data-team-column="todo"] .task {
+  border-left-color: var(--dsw-alias-border-l1);
+}
+
+.column[data-team-column="in_progress"] .task {
+  border-left-color: var(--dsw-alias-brand-primary);
+}
+
+.column[data-team-column="blocked"] .task {
+  border-left-color: var(--dsw-alias-state-error-primary);
+}
+
+.column[data-team-column="done"] .task {
+  border-left-color: var(--dsw-alias-state-success-primary);
+}
+
+.taskTitle {
+  font-size: 13px;
+  line-height: 18px;
+  overflow-wrap: anywhere;
+}
+
+.taskAssignee {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--dsw-alias-label-caption);
+}
+
+/* ---- Skills ---- */
+
+.skills {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.skill {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 14px;
+  border: 1px solid var(--dsw-alias-border-l1);
+  border-radius: 10px;
+  background: var(--dsw-alias-bg-layer-1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.skillName {
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--dsw-alias-label-primary);
+}
+
+.skillInstructions {
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--dsw-alias-label-secondary);
+  overflow-wrap: anywhere;
+}
