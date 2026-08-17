@@ -150,7 +150,7 @@
 }
 
 .column[data-team-column="in_progress"] .columnHeader {
-  background: color-mix(in srgb, var(--dsw-alias-brand-primary) 35%, var(--dsw-alias-bg-base));
+  background: color-mix(in srgb, var(--dsw-alias-state-business-primary) 25%, var(--dsw-alias-bg-base));
 }
 
 .column[data-team-column="blocked"] .columnHeader {
@@ -233,8 +233,8 @@
 }
 
 .statusBadge[data-team-status="in_progress"] {
-  background: color-mix(in srgb, var(--dsw-alias-brand-primary) 30%, var(--dsw-alias-bg-base));
-  color: var(--dsw-alias-brand-primary);
+  background: color-mix(in srgb, var(--dsw-alias-state-business-primary) 22%, var(--dsw-alias-bg-base));
+  color: var(--dsw-alias-state-business-primary);
 }
 
 .statusBadge[data-team-status="blocked"] {
