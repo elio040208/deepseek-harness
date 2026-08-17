@@ -132,7 +132,7 @@
   overflow: hidden;
 }
 
-/* Per-column header: colored bar with the status name. */
+/* Per-column header: pastel colored bar. */
 .columnHeader {
   display: flex;
   align-items: center;
@@ -142,26 +142,23 @@
   font-size: 13px;
   line-height: 20px;
   font-weight: 600;
-}
-
-.column[data-team-column="todo"] .columnHeader {
-  background: var(--dsw-alias-bg-layer-3);
   color: var(--dsw-alias-label-primary);
 }
 
+.column[data-team-column="todo"] .columnHeader {
+  background: color-mix(in srgb, var(--dsw-alias-state-warn-primary) 28%, var(--dsw-alias-bg-base));
+}
+
 .column[data-team-column="in_progress"] .columnHeader {
-  background: var(--dsw-alias-brand-primary);
-  color: var(--dsw-alias-bg-base);
+  background: color-mix(in srgb, var(--dsw-alias-brand-primary) 22%, var(--dsw-alias-bg-base));
 }
 
 .column[data-team-column="blocked"] .columnHeader {
-  background: var(--dsw-alias-state-error-primary);
-  color: var(--dsw-alias-bg-base);
+  background: color-mix(in srgb, var(--dsw-alias-state-error-primary) 18%, var(--dsw-alias-bg-base));
 }
 
 .column[data-team-column="done"] .columnHeader {
-  background: var(--dsw-alias-state-success-primary);
-  color: var(--dsw-alias-bg-base);
+  background: color-mix(in srgb, var(--dsw-alias-state-success-primary) 22%, var(--dsw-alias-bg-base));
 }
 
 .columnTitle {
@@ -176,14 +173,10 @@
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--dsw-alias-bg-layer-2);
   font-size: 12px;
   line-height: 1;
   font-weight: 600;
-}
-
-.column[data-team-column="todo"] .columnCount {
-  background: var(--dsw-alias-bg-layer-2);
 }
 
 .taskList {
@@ -223,7 +216,7 @@
   min-width: 0;
 }
 
-/* Status badge: a colored pill on each task card. */
+/* Status badge: pastel pill with saturated text. */
 .statusBadge {
   flex-shrink: 0;
   padding: 1px 8px;
@@ -235,23 +228,23 @@
 }
 
 .statusBadge[data-team-status="todo"] {
-  background: var(--dsw-alias-bg-layer-3);
-  color: var(--dsw-alias-label-secondary);
+  background: color-mix(in srgb, var(--dsw-alias-state-warn-primary) 30%, var(--dsw-alias-bg-base));
+  color: var(--dsw-alias-label-primary);
 }
 
 .statusBadge[data-team-status="in_progress"] {
-  background: var(--dsw-alias-brand-primary);
-  color: var(--dsw-alias-bg-base);
+  background: color-mix(in srgb, var(--dsw-alias-brand-primary) 22%, var(--dsw-alias-bg-base));
+  color: var(--dsw-alias-brand-primary);
 }
 
 .statusBadge[data-team-status="blocked"] {
-  background: var(--dsw-alias-state-error-primary);
-  color: var(--dsw-alias-bg-base);
+  background: color-mix(in srgb, var(--dsw-alias-state-error-primary) 18%, var(--dsw-alias-bg-base));
+  color: var(--dsw-alias-state-error-primary);
 }
 
 .statusBadge[data-team-status="done"] {
-  background: var(--dsw-alias-state-success-primary);
-  color: var(--dsw-alias-bg-base);
+  background: color-mix(in srgb, var(--dsw-alias-state-success-primary) 22%, var(--dsw-alias-bg-base));
+  color: var(--dsw-alias-state-success-primary);
 }
 
 .taskAssignee {
