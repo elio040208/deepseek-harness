@@ -5,8 +5,8 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 20px 24px 40px;
+  gap: 28px;
+  padding: 24px 28px 40px;
   color: var(--dsw-alias-label-primary);
 }
 
@@ -40,15 +40,15 @@
 .section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .sectionTitle {
   margin: 0;
-  font-size: 13px;
-  line-height: 20px;
+  font-size: 15px;
+  line-height: 24px;
   font-weight: 600;
-  color: var(--dsw-alias-label-secondary);
+  color: var(--dsw-alias-label-primary);
 }
 
 .sectionEmpty {
@@ -62,7 +62,7 @@
 
 .teammates {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 12px;
   margin: 0;
   padding: 0;
@@ -73,24 +73,24 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 12px 14px;
+  gap: 8px;
+  padding: 14px 16px;
   border: 1px solid var(--dsw-alias-border-l1);
   border-radius: 10px;
   background: var(--dsw-alias-bg-layer-1);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .teammateName {
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 15px;
+  line-height: 22px;
   font-weight: 600;
 }
 
 .teammatePersona {
   font-size: 13px;
   line-height: 20px;
-  color: var(--dsw-alias-label-secondary);
+  color: var(--dsw-alias-label-primary);
   overflow-wrap: anywhere;
 }
 
@@ -102,12 +102,13 @@
 
 .chip {
   box-sizing: border-box;
-  padding: 1px 8px;
+  padding: 2px 10px;
   border: 1px solid var(--dsw-alias-border-l2);
   border-radius: 999px;
   font-size: 12px;
   line-height: 18px;
   color: var(--dsw-alias-label-secondary);
+  background: var(--dsw-alias-bg-layer-2);
 }
 
 /* ---- Task columns ---- */
@@ -122,54 +123,67 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   min-height: 120px;
-  padding: 10px;
+  padding: 0;
   border: 1px solid var(--dsw-alias-border-l1);
-  border-top-width: 3px;
   border-radius: 10px;
   background: var(--dsw-alias-bg-layer-1);
+  overflow: hidden;
 }
 
-/* Per-column top border color accents. */
-.column[data-team-column="todo"] {
-  border-top-color: var(--dsw-alias-label-caption);
-}
-
-.column[data-team-column="in_progress"] {
-  border-top-color: var(--dsw-alias-brand-primary);
-}
-
-.column[data-team-column="blocked"] {
-  border-top-color: var(--dsw-alias-state-error-primary);
-}
-
-.column[data-team-column="done"] {
-  border-top-color: var(--dsw-alias-state-success-primary);
-}
-
+/* Per-column header: colored bar with the status name. */
 .columnHeader {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 600;
+}
+
+.column[data-team-column="todo"] .columnHeader {
+  background: var(--dsw-alias-bg-layer-3);
+  color: var(--dsw-alias-label-primary);
+}
+
+.column[data-team-column="in_progress"] .columnHeader {
+  background: var(--dsw-alias-brand-primary);
+  color: var(--dsw-alias-bg-base);
+}
+
+.column[data-team-column="blocked"] .columnHeader {
+  background: var(--dsw-alias-state-error-primary);
+  color: var(--dsw-alias-bg-base);
+}
+
+.column[data-team-column="done"] .columnHeader {
+  background: var(--dsw-alias-state-success-primary);
+  color: var(--dsw-alias-bg-base);
 }
 
 .columnTitle {
   font-size: 13px;
   line-height: 20px;
-  font-weight: 600;
-  color: var(--dsw-alias-label-secondary);
 }
 
 .columnCount {
-  min-width: 20px;
-  padding: 0 6px;
+  min-width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 999px;
-  background: var(--dsw-alias-bg-layer-3);
+  background: rgba(255, 255, 255, 0.2);
   font-size: 12px;
-  line-height: 18px;
-  text-align: center;
-  color: var(--dsw-alias-label-tertiary);
+  line-height: 1;
+  font-weight: 600;
+}
+
+.column[data-team-column="todo"] .columnCount {
+  background: var(--dsw-alias-bg-layer-2);
 }
 
 .taskList {
@@ -177,7 +191,7 @@
   flex-direction: column;
   gap: 8px;
   margin: 0;
-  padding: 0;
+  padding: 8px 10px 10px;
   list-style: none;
 }
 
@@ -186,41 +200,64 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 8px 10px;
+  padding: 10px 12px;
   border: 1px solid var(--dsw-alias-border-l1);
-  border-left: 3px solid transparent;
   border-radius: 8px;
   background: var(--dsw-alias-bg-base);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
-/* Task left border accents match column color. */
-.column[data-team-column="todo"] .task {
-  border-left-color: var(--dsw-alias-border-l1);
-}
-
-.column[data-team-column="in_progress"] .task {
-  border-left-color: var(--dsw-alias-brand-primary);
-}
-
-.column[data-team-column="blocked"] .task {
-  border-left-color: var(--dsw-alias-state-error-primary);
-}
-
-.column[data-team-column="done"] .task {
-  border-left-color: var(--dsw-alias-state-success-primary);
+.taskHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .taskTitle {
   font-size: 13px;
   line-height: 18px;
+  font-weight: 500;
   overflow-wrap: anywhere;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Status badge: a colored pill on each task card. */
+.statusBadge {
+  flex-shrink: 0;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 18px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.statusBadge[data-team-status="todo"] {
+  background: var(--dsw-alias-bg-layer-3);
+  color: var(--dsw-alias-label-secondary);
+}
+
+.statusBadge[data-team-status="in_progress"] {
+  background: var(--dsw-alias-brand-primary);
+  color: var(--dsw-alias-bg-base);
+}
+
+.statusBadge[data-team-status="blocked"] {
+  background: var(--dsw-alias-state-error-primary);
+  color: var(--dsw-alias-bg-base);
+}
+
+.statusBadge[data-team-status="done"] {
+  background: var(--dsw-alias-state-success-primary);
+  color: var(--dsw-alias-bg-base);
 }
 
 .taskAssignee {
   font-size: 12px;
   line-height: 18px;
-  color: var(--dsw-alias-label-caption);
+  color: var(--dsw-alias-label-secondary);
 }
 
 /* ---- Skills ---- */
@@ -238,8 +275,8 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 10px 14px;
+  gap: 6px;
+  padding: 12px 16px;
   border: 1px solid var(--dsw-alias-border-l1);
   border-radius: 10px;
   background: var(--dsw-alias-bg-layer-1);
@@ -247,7 +284,7 @@
 }
 
 .skillName {
-  font-size: 13px;
+  font-size: 14px;
   line-height: 20px;
   font-weight: 600;
   color: var(--dsw-alias-label-primary);
@@ -256,6 +293,6 @@
 .skillInstructions {
   font-size: 13px;
   line-height: 20px;
-  color: var(--dsw-alias-label-secondary);
+  color: var(--dsw-alias-label-primary);
   overflow-wrap: anywhere;
 }
