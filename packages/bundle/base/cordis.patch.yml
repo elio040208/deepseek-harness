@@ -262,6 +262,11 @@
     - id: command-goal
       name: '@deepseek-ai/dsh-command-goal'
 
+    # Event-sourced per-session team domain: teammate roster, task board, and
+    # shared skill library. The model-facing tools are mounted below.
+    - id: team
+      name: '@deepseek-ai/dsh-team'
+
     - id: plan-mode
       name: '@deepseek-ai/dsh-plan-mode'
       config:
@@ -373,6 +378,10 @@
     # domain, driver, and `/goal` command are above.
     - id: tool-goal
       name: '@deepseek-ai/dsh-tool-goal'
+
+    # Multica-style team board tools over the persisted team domain.
+    - id: tool-team
+      name: '@deepseek-ai/dsh-tool-team'
 
     # Fresh-agent Ralph iteration over a build-time-fixed script.
     - id: tool-ralph

@@ -355,6 +355,14 @@ const SERVICE_ROLES: ServiceRole[] = [
     note: 'Folds revisioned objective state from the session log and keeps live continuation activation process-local.',
   },
   {
+    key: 'teams',
+    pkg: 'team',
+    title: 'Managed team domain',
+    mode: 'core',
+    consumers: ['tool-team'],
+    note: 'Folds a whole-value teammate roster, task board, and shared skill library from the session log.',
+  },
+  {
     key: 'e2b',
     pkg: 'e2b',
     title: 'E2B sandbox lifecycle owner',

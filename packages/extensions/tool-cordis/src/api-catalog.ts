@@ -1737,6 +1737,56 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     ],
   },
   {
+    key: 'teams',
+    summary: 'Team service (`ctx.teams`) backed exclusively by the owning session log.',
+    description: 'Team service (`ctx.teams`) backed exclusively by the owning session log.',
+    methods: [
+      {
+        signature: 'getBoard(agent: Agent): TeamBoard | undefined',
+        description: 'Read the current team board for one exact live agent.',
+        parameters: [{ name: 'agent', description: 'owning live agent.' }],
+        returns: 'the current board, or `undefined` before the first write.',
+        throws: ['{@link TeamError} when the agent is not the registry\'s live instance.'],
+      },
+      {
+        signature: 'addTeammate(agent: Agent, request: AddTeammateRequest): TeamBoard',
+        description: 'Add one teammate to the roster.',
+        parameters: [{ name: 'agent', description: 'owning live agent.' }, { name: 'request', description: 'name, persona, and optional shared skill names.' }],
+        returns: 'the post-mutation board.',
+      },
+      {
+        signature: 'removeTeammate(agent: Agent, request: RemoveTeammateRequest): TeamBoard',
+        description: 'Remove one teammate, rejecting when a task still assigns it.',
+        parameters: [{ name: 'agent', description: 'owning live agent.' }, { name: 'request', description: 'exact teammate to remove.' }],
+        returns: 'the post-mutation board.',
+      },
+      {
+        signature: 'createTask(agent: Agent, request: CreateTaskRequest): TeamBoard',
+        description: 'Create one board task, optionally pre-assigned to a teammate.',
+        parameters: [{ name: 'agent', description: 'owning live agent.' }, { name: 'request', description: 'title, objective, and optional assignee.' }],
+        returns: 'the post-mutation board.',
+      },
+      {
+        signature: 'updateTask(agent: Agent, request: UpdateTaskRequest): TeamBoard',
+        description: 'Mutate one task\'s status, assignee, or result. At least one field must be present.',
+        parameters: [{ name: 'agent', description: 'owning live agent.' }, { name: 'request', description: 'exact task plus replacement fields.' }],
+        returns: 'the post-mutation board.',
+      },
+      {
+        signature: 'shareSkill(agent: Agent, request: ShareSkillRequest): TeamBoard',
+        description: 'Add one shared skill to the team library.',
+        parameters: [{ name: 'agent', description: 'owning live agent.' }, { name: 'request', description: 'skill name and verbatim instructions.' }],
+        returns: 'the post-mutation board.',
+      },
+      {
+        signature: 'removeSkill(agent: Agent, request: RemoveSkillRequest): TeamBoard',
+        description: 'Remove one shared skill, rejecting while a teammate still references it.',
+        parameters: [{ name: 'agent', description: 'owning live agent.' }, { name: 'request', description: 'exact skill to remove.' }],
+        returns: 'the post-mutation board.',
+      },
+    ],
+  },
+  {
     key: 'terminals',
     summary: 'In-process registry for replaceable PTY backends and exact-Agent sessions.',
     description: 'In-process registry for replaceable PTY backends and exact-Agent sessions.',
@@ -2510,6 +2560,14 @@ export const EVENT_API: readonly EventApiEntry[] = [
     parameters: [],
   },
   {
+    name: 'team/board-changed',
+    mode: 'emit',
+    signature: '\'team/board-changed\'(this: import(\'@deepseek-ai/dsh-scope\').Scoped<Agent>, payload: { agent: Agent; change: TeamBoardChanged }): void',
+    summary: 'Team board mutation accepted by one live agent.',
+    description: 'Team board mutation accepted by one live agent. The matching `team/board` session event has already committed. Listener failures are contained. Scope-filtered dispatch (`@deepseek-ai/dsh-scope`): agent-scoped listeners receive only that agent.',
+    parameters: [{ name: 'payload', description: '.change - fresh post-mutation board.' }],
+  },
+  {
     name: 'tools/change',
     mode: 'emit',
     signature: '\'tools/change\'(): void',
@@ -2612,6 +2670,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'AdapterRegistrationHandle',
     declaration: 'export interface AdapterRegistrationHandle {\n    (): void;\n    replace(providers: string[]): void;\n}',
+  },
+  {
+    name: 'AddTeammateRequest',
+    declaration: 'export interface AddTeammateRequest {\n    readonly name: string;\n    readonly persona: string;\n    readonly skills?: readonly string[];\n}',
   },
   {
     name: 'Agent',
@@ -2912,6 +2974,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'CreateSessionOptions',
     declaration: 'export interface CreateSessionOptions {\n    readonly seed?: readonly SessionEvent[];\n    readonly meta?: {\n        readonly cwd?: string;\n        readonly parentSession?: SessionId;\n        readonly createdAt?: number;\n        readonly seedLength?: number;\n        readonly origin?: \'subagent\';\n        readonly delegationDepth?: number;\n        readonly agentPreset?: string;\n    };\n}',
+  },
+  {
+    name: 'CreateTaskRequest',
+    declaration: 'export interface CreateTaskRequest {\n    readonly title: string;\n    readonly objective: string;\n    readonly assigneeId?: TeammateId;\n}',
   },
   {
     name: 'CredentialInfo',
@@ -3578,6 +3644,14 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface RedactedSecret {\n    path: string[];\n    set: boolean;\n}',
   },
   {
+    name: 'RemoveSkillRequest',
+    declaration: 'export interface RemoveSkillRequest {\n    readonly skillId: TeamSkillId;\n}',
+  },
+  {
+    name: 'RemoveTeammateRequest',
+    declaration: 'export interface RemoveTeammateRequest {\n    readonly teammateId: TeammateId;\n}',
+  },
+  {
     name: 'RequestContext',
     declaration: 'export interface RequestContext {\n    provider: string;\n    model: string;\n    contextWindow?: number;\n}',
   },
@@ -3982,6 +4056,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export type SettingsUpdateSource = \'update\' | \'provider\';',
   },
   {
+    name: 'ShareSkillRequest',
+    declaration: 'export interface ShareSkillRequest {\n    readonly name: string;\n    readonly instructions: string;\n}',
+  },
+  {
     name: 'ShellExecRequest',
     declaration: 'export interface ShellExecRequest {\n    command: string;\n    workdir?: string | undefined;\n    timeoutMs?: number | undefined;\n    stdoutMaxBytes?: number | undefined;\n    signal?: AbortSignal | undefined;\n    stdin?: string | undefined;\n    env?: Record<string, string> | undefined;\n    dshEnv?: DshEnvironment | undefined;\n    sandboxPolicy?: SandboxExecutionPolicy | undefined;\n}',
   },
@@ -4240,6 +4318,42 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'TableValueOf',
     declaration: 'export type TableValueOf<S extends DomainSpec, N extends keyof S[\'tables\']> = S[\'tables\'][N] extends DomainTableSpec<string, infer V> ? V : never;',
+  },
+  {
+    name: 'TeamBoard',
+    declaration: 'export interface TeamBoard {\n    readonly teammates: readonly Teammate[];\n    readonly tasks: readonly TeamTask[];\n    readonly skills: readonly TeamSkill[];\n}',
+  },
+  {
+    name: 'TeamBoardChanged',
+    declaration: 'export interface TeamBoardChanged {\n    readonly board: TeamBoard;\n}',
+  },
+  {
+    name: 'Teammate',
+    declaration: 'export interface Teammate {\n    readonly id: TeammateId;\n    readonly name: string;\n    readonly persona: string;\n    readonly skills: readonly string[];\n    readonly createdAt: number;\n}',
+  },
+  {
+    name: 'TeammateId',
+    declaration: 'export type TeammateId = Branded<\'TeammateId\'>;',
+  },
+  {
+    name: 'TeamSkill',
+    declaration: 'export interface TeamSkill {\n    readonly id: TeamSkillId;\n    readonly name: string;\n    readonly instructions: string;\n    readonly createdAt: number;\n}',
+  },
+  {
+    name: 'TeamSkillId',
+    declaration: 'export type TeamSkillId = Branded<\'TeamSkillId\'>;',
+  },
+  {
+    name: 'TeamTask',
+    declaration: 'export interface TeamTask {\n    readonly id: TeamTaskId;\n    readonly title: string;\n    readonly objective: string;\n    readonly status: TeamTaskStatus;\n    readonly assigneeId?: TeammateId;\n    readonly childSessionId?: string;\n    readonly createdAt: number;\n    readonly updatedAt: number;\n    readonly result?: string;\n}',
+  },
+  {
+    name: 'TeamTaskId',
+    declaration: 'export type TeamTaskId = Branded<\'TeamTaskId\'>;',
+  },
+  {
+    name: 'TeamTaskStatus',
+    declaration: 'export type TeamTaskStatus = \'todo\' | \'in_progress\' | \'blocked\' | \'done\';',
   },
   {
     name: 'TerminalBackend',
@@ -4520,6 +4634,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'TypertTypeModel',
     declaration: 'export interface TypertTypeModel {\n    readonly name: string;\n    readonly declaration: string;\n}',
+  },
+  {
+    name: 'UpdateTaskRequest',
+    declaration: 'export interface UpdateTaskRequest {\n    readonly taskId: TeamTaskId;\n    readonly status?: TeamTaskStatus;\n    readonly assigneeId?: TeammateId;\n    readonly result?: string;\n}',
   },
   {
     name: 'UserMessage',

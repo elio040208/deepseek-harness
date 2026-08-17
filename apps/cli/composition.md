@@ -100,6 +100,8 @@ flowchart LR
   cfg --> plugin_dsh_base_goal_round_driver
   plugin_dsh_base_command_goal["command-goal<br/>@deepseek-ai/dsh-command-goal"]
   cfg --> plugin_dsh_base_command_goal
+  plugin_dsh_base_team["team<br/>@deepseek-ai/dsh-team"]
+  cfg --> plugin_dsh_base_team
   plugin_dsh_base_plan_mode["plan-mode<br/>@deepseek-ai/dsh-plan-mode"]
   cfg --> plugin_dsh_base_plan_mode
   plugin_dsh_base_token_meter["token-meter<br/>@deepseek-ai/dsh-token-meter"]
@@ -142,6 +144,8 @@ flowchart LR
   cfg --> plugin_dsh_base_tool_todo
   plugin_dsh_base_tool_goal["tool-goal<br/>@deepseek-ai/dsh-tool-goal"]
   cfg --> plugin_dsh_base_tool_goal
+  plugin_dsh_base_tool_team["tool-team<br/>@deepseek-ai/dsh-tool-team"]
+  cfg --> plugin_dsh_base_tool_team
   plugin_dsh_base_tool_ralph["tool-ralph<br/>@deepseek-ai/dsh-tool-ralph"]
   cfg --> plugin_dsh_base_tool_ralph
   plugin_dsh_base_tool_str_replace_editor["tool-str-replace-editor<br/>@deepseek-ai/dsh-tool-str-replace-editor"]
@@ -214,6 +218,7 @@ flowchart LR
 | `goal` | `@deepseek-ai/dsh-goal` |
 | `goal-round-driver` | `@deepseek-ai/dsh-goal-round-driver` |
 | `command-goal` | `@deepseek-ai/dsh-command-goal` |
+| `team` | `@deepseek-ai/dsh-team` |
 | `plan-mode` | `@deepseek-ai/dsh-plan-mode` |
 | `token-meter` | `@deepseek-ai/dsh-token-meter` |
 | `compaction-basic` | `@deepseek-ai/dsh-compaction-basic` |
@@ -235,6 +240,7 @@ flowchart LR
 | `tool-result-pruner` | `@deepseek-ai/dsh-compaction-tool-result-pruner` |
 | `tool-todo` | `@deepseek-ai/dsh-tool-todo` |
 | `tool-goal` | `@deepseek-ai/dsh-tool-goal` |
+| `tool-team` | `@deepseek-ai/dsh-tool-team` |
 | `tool-ralph` | `@deepseek-ai/dsh-tool-ralph` |
 | `tool-str-replace-editor` | `@deepseek-ai/dsh-tool-str-replace-editor` |
 | `repeat-tool-reminder` | `@deepseek-ai/dsh-repeat-tool-reminder` |

@@ -17,6 +17,7 @@ import SessionStore, { SessionId } from '@deepseek-ai/dsh-session'
 import SessionProjectionRegistry from '@deepseek-ai/dsh-session-projection'
 import SqliteSessionQueryEngine from '@deepseek-ai/dsh-session-query-sqlite'
 import GoalService from '@deepseek-ai/dsh-goal'
+import TeamService from '@deepseek-ai/dsh-team'
 import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
 import ToolRuntime, { type Config as ToolsConfig } from '@deepseek-ai/dsh-tools'
 import LocalBashExecutor from '@deepseek-ai/dsh-bash-local'
@@ -58,6 +59,7 @@ import * as ToolSkill from '@deepseek-ai/dsh-tool-skill'
 import * as ToolSessionQuery from '@deepseek-ai/dsh-tool-session-query'
 import * as ToolTasks from '@deepseek-ai/dsh-tool-jobs'
 import * as ToolTodo from '@deepseek-ai/dsh-tool-todo'
+import * as ToolTeam from '@deepseek-ai/dsh-tool-team'
 import * as ToolSubagent from '@deepseek-ai/dsh-tool-subagent'
 import * as ToolWeb from '@deepseek-ai/dsh-tool-web'
 import VmWorkflowEngine from '@deepseek-ai/dsh-workflow-worker-thread'
@@ -517,6 +519,20 @@ const TOOL_PACKAGES: ToolPackage[] = [
     },
     note:
       'todo_write is session-owned state; UIs render the latest todo/write event as a checklist. `allowParallelInProgress` is required with no default, so the catalog states its choice: `true`, whose description invites several `in_progress` items. A deployment choosing `false` receives the same tool with a description asking for exactly one active task.',
+  },
+  {
+    pkg: '@deepseek-ai/dsh-tool-team',
+    dir: 'tool-team',
+    source: 'packages/team/tool-team/src/index.ts',
+    requires: ['ctx.tools', 'ctx.agents', 'ctx.teams', 'ctx.systemPrompt', 'a calling Agent in an open turn'],
+    writes: ['tool/call', 'team/board for mutations', 'tool/result'],
+    async mount(ctx) {
+      await ctx.plugin(AgentRegistry)
+      await ctx.plugin(TeamService)
+      await ctx.plugin(ToolTeam)
+    },
+    note:
+      'team_board, team_teammate, team_task, and team_skill manage a per-session roster, task board, and shared skill library. Assignment is board-only: no tool yet dispatches a continuable child, and no direct-human gate applies because autonomous orchestration is the feature.',
   },
   {
     pkg: '@deepseek-ai/dsh-tool-workflow',

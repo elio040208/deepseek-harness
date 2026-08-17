@@ -2246,6 +2246,26 @@ export interface Config {
 
 来源：[`packages/core/system-prompt/src/index.ts:186`](../packages/core/system-prompt/src/index.ts)
 
+<a id="deepseek-aidsh-team"></a>
+
+## `@deepseek-ai/dsh-team`
+
+依赖：`agents`
+
+```ts config-catalog
+/** Deployment bounds for board growth. */
+export interface Config {
+  /** Maximum admitted teammates. */
+  maxTeammates?: number
+  /** Maximum admitted tasks. */
+  maxTasks?: number
+  /** Maximum admitted shared skills. */
+  maxSkills?: number
+}
+```
+
+来源：[`packages/team/team/src/index.ts:121`](../packages/team/team/src/index.ts)
+
 <a id="deepseek-aidsh-terminal-bash"></a>
 
 ## `@deepseek-ai/dsh-terminal-bash`
@@ -3090,6 +3110,7 @@ export interface Config {
 - `@deepseek-ai/dsh-tool-call-timeout-policy` — 需要 `tools`（[`packages/guard/timeout-policy/src/index.ts`](../packages/guard/timeout-policy/src/index.ts)）
 - `@deepseek-ai/dsh-tool-cordis` — 需要 `tools` · `systemPrompt` · `dynamicCordisRunner` · `cordisInspect`（[`packages/extensions/tool-cordis/src/index.ts`](../packages/extensions/tool-cordis/src/index.ts)）
 - `@deepseek-ai/dsh-tool-subagent-control` — 需要 `tools` · `subagents`（[`packages/subagent/tool-subagent-control/src/index.ts`](../packages/subagent/tool-subagent-control/src/index.ts)）
+- `@deepseek-ai/dsh-tool-team` — 需要 `agents` · `teams` · `tools` · `systemPrompt`（[`packages/team/tool-team/src/index.ts`](../packages/team/tool-team/src/index.ts)）
 - `@deepseek-ai/dsh-user-questions`（[`packages/interaction/user-questions/src/index.ts`](../packages/interaction/user-questions/src/index.ts)）
 - `@deepseek-ai/dsh-workspace` — 需要 `storageDomain` · `sessionPersistence`（[`packages/workspace/workspace/src/index.ts`](../packages/workspace/workspace/src/index.ts)）
 

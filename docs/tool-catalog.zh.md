@@ -39,6 +39,7 @@
 | `@deepseek-ai/dsh-tool-subagent-report` | `report` | `ctx.subagents`、`ctx.systemPrompt`、`a live continuable in-process child Agent` | `tool/call`、`tool/result`、`a user-role message in the direct parent session` | - | 按可继续的进程内子级注册，而非全局注册，因此该 schema 仅在这种子级内部可见，并且不受其全局 `toolFilter` 影响。同一份贡献还会安装子级作用域的 `tool:report` 系统提示词 section，本目录不渲染该 section。面向父级的 `send_message` 工具单独安装。 |
 | `@deepseek-ai/dsh-tool-jobs` | `job_kill`、`job_list`、`job_output` | `ctx.tools`、`ctx.jobs`、`ctx.systemPrompt` | `tool/call`、`tool/result`、`user/message via agent.inject() for background completion notices` | - | 与任务种类无关的后台任务控制器：后台 bash 命令、PTY 发送和 subagent 都通过相同的 3 个工具读取、列出和终止。加载该插件会挂接控制器，从而启用生产方的 `ctx.jobs.start()`。 |
 | `@deepseek-ai/dsh-tool-todo` | `todo_write` | `ctx.tools`、`owning Agent session` | `tool/call`、`todo/write`、`tool/result` | - | todo_write 是会话所有的状态；UI 将最新的 todo/write 事件渲染为检查清单。`allowParallelInProgress` 是没有默认值的必填项，因此本目录明确选择 `true`，对应描述允许同时存在多个 `in_progress` 项。选择 `false` 的部署会获得同一工具，但描述会要求只能有 1 个活动任务。 |
+| `@deepseek-ai/dsh-tool-team` | `team_board`、`team_skill`、`team_task`、`team_teammate` | `ctx.tools`、`ctx.agents`、`ctx.teams`、`ctx.systemPrompt`、`a calling Agent in an open turn` | `tool/call`、`team/board for mutations`、`tool/result` | - | team_board、team_teammate、team_task 和 team_skill 管理每会话的名单、任务看板与共享技能库。当前指派仅限看板：尚无工具派发可延续子 agent，且由于自主编排正是该特性，因此没有 direct-human 门槛。 |
 | `@deepseek-ai/dsh-tool-workflow` | `workflow` | `ctx.tools`、`ctx.workflowEngine`、`ctx.systemPrompt`、`a calling Agent (exec.agent parents the script children)` | `tool/call`、`tool/result` | - | - |
 | `@deepseek-ai/dsh-tool-web` | `web_fetch`、`web_search` | `ctx.tools`、`ctx.web`、`ctx.systemPrompt` | `tool/call`、`tool/result` | - | web_search 和 web_fetch 将提供方选择置于 ctx.web 之后，使模型可见 schema 在更换后端时保持稳定。 |
 
@@ -1732,6 +1733,161 @@ lsp 工具将提供方选择和语言服务器子进程置于 ctx.lsp 之后，�
 来源：[`packages/todo/tool-todo/src/index.ts`](../packages/todo/tool-todo/src/index.ts)
 
 todo_write 是会话所有的状态；UI 将最新的 todo/write 事件渲染为检查清单。`allowParallelInProgress` 是没有默认值的必填项，因此本目录明确选择 `true`，对应描述允许同时存在多个 `in_progress` 项。选择 `false` 的部署会获得同一工具，但描述会要求只能有 1 个活动任务。
+
+<a id="deepseek-aidsh-tool-team"></a>
+
+## `@deepseek-ai/dsh-tool-team`
+
+### `team_board`
+
+读取当前团队看板：队友名单（含各自 persona 与技能）、任务列表（含状态与负责人）、以及共享技能库。在变更团队之前调用此工具，以读取确切的 id 与当前状态。
+
+```json
+{
+  "type": "object",
+  "properties": {}
+}
+```
+
+来源：[`packages/team/tool-team/src/index.ts`](../packages/team/tool-team/src/index.ts)
+
+### `team_skill`
+
+向团队库共享一个可复用技能，或删除一个。共享技能对每个列出它的队友都可见，因此团队会跨任务累积知识。删除仍被队友引用的技能会被拒绝。
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "description": "share | remove",
+      "enum": [
+        "share",
+        "remove"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "description": "Lower-kebab-case skill name; required with action share."
+    },
+    "instructions": {
+      "type": "string",
+      "description": "Verbatim skill instructions; required with action share."
+    },
+    "skill_id": {
+      "type": "string",
+      "description": "Exact skill id; required with action remove."
+    }
+  },
+  "required": [
+    "action"
+  ]
+}
+```
+
+来源：[`packages/team/tool-team/src/index.ts`](../packages/team/tool-team/src/index.ts)
+
+### `team_task`
+
+在看板上创建任务，或更新一个。任务有标题、目标（交给负责人的工作）、状态（todo、in_progress、blocked、done）以及可选的负责人。带负责人创建任务会记录该指派；把它派发给真正的子 agent 是后续的显式步骤。
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "description": "create | update",
+      "enum": [
+        "create",
+        "update"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "description": "Short imperative title; required with action create."
+    },
+    "objective": {
+      "type": "string",
+      "description": "Full work description; required with action create."
+    },
+    "assignee_id": {
+      "type": "string",
+      "description": "Teammate id; optional with create or update."
+    },
+    "task_id": {
+      "type": "string",
+      "description": "Exact task id; required with action update."
+    },
+    "status": {
+      "type": "string",
+      "description": "Replacement status; optional with update.",
+      "enum": [
+        "todo",
+        "in_progress",
+        "blocked",
+        "done"
+      ]
+    },
+    "result": {
+      "type": "string",
+      "description": "Final handoff text; optional with update (normally with status done)."
+    }
+  },
+  "required": [
+    "action"
+  ]
+}
+```
+
+来源：[`packages/team/tool-team/src/index.ts`](../packages/team/tool-team/src/index.ts)
+
+### `team_teammate`
+
+向名单添加一个队友，或删除一个。队友是一个具名角色：其 persona 在派发任务时成为子 agent persona，其技能是它引用的共享团队技能。删除仍带有已指派任务的队友会被拒绝。
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "description": "add | remove",
+      "enum": [
+        "add",
+        "remove"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "description": "Unique display name; required with action add."
+    },
+    "persona": {
+      "type": "string",
+      "description": "Role description; required with action add."
+    },
+    "skills": {
+      "type": "array",
+      "description": "Shared skill names; optional with action add.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "teammate_id": {
+      "type": "string",
+      "description": "Exact teammate id; required with action remove."
+    }
+  },
+  "required": [
+    "action"
+  ]
+}
+```
+
+来源：[`packages/team/tool-team/src/index.ts`](../packages/team/tool-team/src/index.ts)
+
+team_board、team_teammate、team_task 和 team_skill 管理每会话的名单、任务看板与共享技能库。当前指派仅限看板：尚无工具派发可延续子 agent，且由于自主编排正是该特性，因此没有 direct-human 门槛。
 
 <a id="deepseek-aidsh-tool-workflow"></a>
 

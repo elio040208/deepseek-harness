@@ -37,6 +37,7 @@ This table connects model-visible tool names to the plugin package and service s
 | `@deepseek-ai/dsh-tool-subagent-report` | `report` | `ctx.subagents`, `ctx.systemPrompt`, `a live continuable in-process child Agent` | `tool/call`, `tool/result`, `a user-role message in the direct parent session` | - | Registered per continuable in-process child rather than globally, so this schema is visible only inside such a child and survives its global `toolFilter`. The same contribution installs the child-scoped `tool:report` prompt section, which this catalog does not render. The parent-facing `send_message` tool is installed independently. |
 | `@deepseek-ai/dsh-tool-jobs` | `job_kill`, `job_list`, `job_output` | `ctx.tools`, `ctx.jobs`, `ctx.systemPrompt` | `tool/call`, `tool/result`, `user/message via agent.inject() for background completion notices` | - | The kind-agnostic background-job controller: background bash commands, PTY sends, and subagents are read, listed, and killed through the same three tools. Loading the plugin attaches the controller that arms producers' `ctx.jobs.start()`. |
 | `@deepseek-ai/dsh-tool-todo` | `todo_write` | `ctx.tools`, `owning Agent session` | `tool/call`, `todo/write`, `tool/result` | - | todo_write is session-owned state; UIs render the latest todo/write event as a checklist. `allowParallelInProgress` is required with no default, so the catalog states its choice: `true`, whose description invites several `in_progress` items. A deployment choosing `false` receives the same tool with a description asking for exactly one active task. |
+| `@deepseek-ai/dsh-tool-team` | `team_board`, `team_skill`, `team_task`, `team_teammate` | `ctx.tools`, `ctx.agents`, `ctx.teams`, `ctx.systemPrompt`, `a calling Agent in an open turn` | `tool/call`, `team/board for mutations`, `tool/result` | - | team_board, team_teammate, team_task, and team_skill manage a per-session roster, task board, and shared skill library. Assignment is board-only: no tool yet dispatches a continuable child, and no direct-human gate applies because autonomous orchestration is the feature. |
 | `@deepseek-ai/dsh-tool-workflow` | `workflow` | `ctx.tools`, `ctx.workflowEngine`, `ctx.systemPrompt`, `a calling Agent (exec.agent parents the script children)` | `tool/call`, `tool/result` | - | - |
 | `@deepseek-ai/dsh-tool-web` | `web_fetch`, `web_search` | `ctx.tools`, `ctx.web`, `ctx.systemPrompt` | `tool/call`, `tool/result` | - | web_search and web_fetch keep provider selection behind ctx.web so model-visible schemas stay stable across backend swaps. |
 
@@ -1728,6 +1729,161 @@ Record and update a structured task list for the current work. Send the ENTIRE l
 Source: [`packages/todo/tool-todo/src/index.ts`](../packages/todo/tool-todo/src/index.ts)
 
 todo_write is session-owned state; UIs render the latest todo/write event as a checklist. `allowParallelInProgress` is required with no default, so the catalog states its choice: `true`, whose description invites several `in_progress` items. A deployment choosing `false` receives the same tool with a description asking for exactly one active task.
+
+<a id="deepseek-aidsh-tool-team"></a>
+
+## `@deepseek-ai/dsh-tool-team`
+
+### `team_board`
+
+Read the current team board: the roster of teammates (with their personas and skills), the task list (with status and assignee), and the shared skill library. Call this before mutating the team to read exact ids and current state.
+
+```json
+{
+  "type": "object",
+  "properties": {}
+}
+```
+
+Source: [`packages/team/tool-team/src/index.ts`](../packages/team/tool-team/src/index.ts)
+
+### `team_skill`
+
+Share a reusable skill into the team library, or remove one. Shared skills are visible to every teammate that lists them, so the team compounds knowledge across tasks. Removing a skill still referenced by a teammate is rejected.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "description": "share | remove",
+      "enum": [
+        "share",
+        "remove"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "description": "Lower-kebab-case skill name; required with action share."
+    },
+    "instructions": {
+      "type": "string",
+      "description": "Verbatim skill instructions; required with action share."
+    },
+    "skill_id": {
+      "type": "string",
+      "description": "Exact skill id; required with action remove."
+    }
+  },
+  "required": [
+    "action"
+  ]
+}
+```
+
+Source: [`packages/team/tool-team/src/index.ts`](../packages/team/tool-team/src/index.ts)
+
+### `team_task`
+
+Create a task on the board, or update one. A task has a title, an objective (the work handed to the assignee), a status (todo, in_progress, blocked, done), and an optional assignee. Creating a task with an assignee records the assignment; dispatching it to a real child agent is a later explicit step.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "description": "create | update",
+      "enum": [
+        "create",
+        "update"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "description": "Short imperative title; required with action create."
+    },
+    "objective": {
+      "type": "string",
+      "description": "Full work description; required with action create."
+    },
+    "assignee_id": {
+      "type": "string",
+      "description": "Teammate id; optional with create or update."
+    },
+    "task_id": {
+      "type": "string",
+      "description": "Exact task id; required with action update."
+    },
+    "status": {
+      "type": "string",
+      "description": "Replacement status; optional with update.",
+      "enum": [
+        "todo",
+        "in_progress",
+        "blocked",
+        "done"
+      ]
+    },
+    "result": {
+      "type": "string",
+      "description": "Final handoff text; optional with update (normally with status done)."
+    }
+  },
+  "required": [
+    "action"
+  ]
+}
+```
+
+Source: [`packages/team/tool-team/src/index.ts`](../packages/team/tool-team/src/index.ts)
+
+### `team_teammate`
+
+Add a teammate to the roster, or remove one. A teammate is a named role: its persona becomes the child agent persona when a task is dispatched, and its skills are shared team skills it draws on. Removing a teammate that still has an assigned task is rejected.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "description": "add | remove",
+      "enum": [
+        "add",
+        "remove"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "description": "Unique display name; required with action add."
+    },
+    "persona": {
+      "type": "string",
+      "description": "Role description; required with action add."
+    },
+    "skills": {
+      "type": "array",
+      "description": "Shared skill names; optional with action add.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "teammate_id": {
+      "type": "string",
+      "description": "Exact teammate id; required with action remove."
+    }
+  },
+  "required": [
+    "action"
+  ]
+}
+```
+
+Source: [`packages/team/tool-team/src/index.ts`](../packages/team/tool-team/src/index.ts)
+
+team_board, team_teammate, team_task, and team_skill manage a per-session roster, task board, and shared skill library. Assignment is board-only: no tool yet dispatches a continuable child, and no direct-human gate applies because autonomous orchestration is the feature.
 
 <a id="deepseek-aidsh-tool-workflow"></a>
 

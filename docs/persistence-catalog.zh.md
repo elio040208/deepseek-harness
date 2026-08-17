@@ -708,6 +708,22 @@ export type SessionEvent<T extends SessionEventType = SessionEventType> = {
 
 来源：[`packages/subagent/subagent/src/descriptor.ts:37`](../packages/subagent/subagent/src/descriptor.ts)
 
+### `team/*`
+
+<a id="teamboard--log-only"></a>
+
+#### `team/board` — log-only
+
+```ts persistence-catalog
+/**
+ * Complete post-mutation team board. Log-only, whole-value replace, last
+ * one wins.
+ */
+'team/board': TeamBoardMeta
+```
+
+来源：[`packages/team/team/src/domain.ts:29`](../packages/team/team/src/domain.ts)
+
 ### `todo/*`
 
 <a id="todowrite--log-only"></a>

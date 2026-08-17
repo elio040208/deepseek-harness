@@ -441,6 +441,24 @@
         "tests/**/*.ts"
       ]
     },
+    "packages/team/team": {
+      "entry": [
+        "tests/**/*.spec.ts"
+      ],
+      "project": [
+        "src/**/*.ts",
+        "tests/**/*.ts"
+      ]
+    },
+    "packages/team/tool-team": {
+      "entry": [
+        "tests/**/*.spec.ts"
+      ],
+      "project": [
+        "src/**/*.ts",
+        "tests/**/*.ts"
+      ]
+    },
     "packages/session-query/session-query-sqlite": {
       "entry": [
         "tests/**/*.spec.ts",

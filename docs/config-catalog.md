@@ -2244,6 +2244,26 @@ export interface Config {
 
 Source: [`packages/core/system-prompt/src/index.ts:186`](../packages/core/system-prompt/src/index.ts)
 
+<a id="deepseek-aidsh-team"></a>
+
+## `@deepseek-ai/dsh-team`
+
+Requires: `agents`
+
+```ts config-catalog
+/** Deployment bounds for board growth. */
+export interface Config {
+  /** Maximum admitted teammates. */
+  maxTeammates?: number
+  /** Maximum admitted tasks. */
+  maxTasks?: number
+  /** Maximum admitted shared skills. */
+  maxSkills?: number
+}
+```
+
+Source: [`packages/team/team/src/index.ts:121`](../packages/team/team/src/index.ts)
+
 <a id="deepseek-aidsh-terminal-bash"></a>
 
 ## `@deepseek-ai/dsh-terminal-bash`
@@ -3088,6 +3108,7 @@ These load from a `cordis.yml` entry with no `config:` block; they declare no co
 - `@deepseek-ai/dsh-tool-call-timeout-policy` — requires `tools` ([`packages/guard/timeout-policy/src/index.ts`](../packages/guard/timeout-policy/src/index.ts))
 - `@deepseek-ai/dsh-tool-cordis` — requires `tools` · `systemPrompt` · `dynamicCordisRunner` · `cordisInspect` ([`packages/extensions/tool-cordis/src/index.ts`](../packages/extensions/tool-cordis/src/index.ts))
 - `@deepseek-ai/dsh-tool-subagent-control` — requires `tools` · `subagents` ([`packages/subagent/tool-subagent-control/src/index.ts`](../packages/subagent/tool-subagent-control/src/index.ts))
+- `@deepseek-ai/dsh-tool-team` — requires `agents` · `teams` · `tools` · `systemPrompt` ([`packages/team/tool-team/src/index.ts`](../packages/team/tool-team/src/index.ts))
 - `@deepseek-ai/dsh-user-questions` ([`packages/interaction/user-questions/src/index.ts`](../packages/interaction/user-questions/src/index.ts))
 - `@deepseek-ai/dsh-workspace` — requires `storageDomain` · `sessionPersistence` ([`packages/workspace/workspace/src/index.ts`](../packages/workspace/workspace/src/index.ts))
 
